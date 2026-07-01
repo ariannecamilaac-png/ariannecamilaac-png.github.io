@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RevisApp V2 Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#0d1117;color:white;overflow-x:hidden;transition:.4s;}
+html{scroll-behavior:smooth;}
+
+
+:root{
+  --bg:#0d1117; --card:#161b22; --card2:#21262d;
+  --azul:#3b82f6; --verde:#22c55e; --vermelho:#ef4444;
+  --laranja:#f59e0b; --roxo:#8b5cf6; --rosa:#ec4899;
+  --cinza:#9ca3af; --branco:#ffffff;
+}
+
+/* SPLASH */
+#splash{position:fixed;top:0;left:0;width:100%;height:100vh;background:linear-gradient(140deg,#071428,#0d1117,#111827);display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:9999;animation:splashOut 4s forwards;}
+.logo{font-size:55px;margin-bottom:15px;animation:pulse 1.5s infinite;}
+.nomeApp{font-size:38px;font-weight:800;letter-spacing:1px;}
+.slogan{margin-top:10px;color:#9ca3af;font-size:18px;}
+.loader{margin-top:40px;width:260px;height:8px;background:#1f2937;border-radius:20px;overflow:hidden;}
+.loader span{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#3b82f6);width:0;animation:loading 3s forwards;}
+
+/* LOGIN */
+#login{display:none;height:100vh;justify-content:center;align-items:center;background:linear-gradient(135deg,#0f172a,#111827);}
+.loginCard{width:390px;background:var(--card);padding:40px;border-radius:25px;box-shadow:0 15px 45px rgba(0,0,0,.45);animation:fadeUp .8s;}
+.loginCard h1{text-align:center;margin-bottom:30px;}
+.loginCard input{width:100%;padding:15px;margin-top:15px;border:none;border-radius:15px;background:#1f2937;color:white;font-size:15px;outline:none;}
+.loginCard button{width:100%;margin-top:25px;padding:15px;border:none;border-radius:15px;background:linear-gradient(90deg,#22c55e,#3b82f6);font-size:18px;font-weight:bold;cursor:pointer;transition:.3s;}
+.loginCard button:hover{transform:scale(1.03);}
+.demo{margin-top:20px;font-size:14px;color:#9ca3af;text-align:center;}
+
+/* APP */
+#app{display:none;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:-290px;top:0;width:280px;height:100%;background:#111827;transition:.4s;z-index:1000;padding-top:30px;box-shadow:5px 0 30px rgba(0,0,0,.4);}
+.sidebar.active{left:0;}
+.sidebar h2{text-align:center;margin-bottom:30px;}
+.sidebar ul{list-style:none;}
+.sidebar li{padding:18px 25px;cursor:pointer;transition:.3s;font-size:17px;}
+.sidebar li:hover{background:#1f2937;padding-left:35px;}
+.overlay{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:999;}
+.overlay.active{display:block;}
+
+/* HEADER */
+header{height:80px;background:#161b22;display:flex;align-items:center;justify-content:space-between;padding:0 25px;position:sticky;top:0;z-index:100;box-shadow:0 5px 20px rgba(0,0,0,.3);}
+.menu{font-size:28px;cursor:pointer;}
+header h2{font-size:28px;}
+.user{display:flex;align-items:center;gap:10px;}
+.avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(45deg,#22c55e,#3b82f6);display:flex;justify-content:center;align-items:center;font-size:22px;}
+
+.container{max-width:480px;margin:auto;padding:30px;}
+
+@keyframes loading{100%{width:100%;}}
+@keyframes pulse{50%{transform:scale(1.08);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes splashOut{0%,80%{opacity:1;visibility:visible;}100%{opacity:0;visibility:hidden;}}
+
+@media(max-width:900px){
+  .loginCard{width:92%;}
+  .container{padding:18px;}
+  header h2{font-size:22px;}
+}
+
+/* PROFILE CARD */
+.profileCard{background:var(--card);border-radius:20px;padding:25px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:fadeUp .6s;}
+.xpArea{display:flex;align-items:center;gap:15px;}
+.xpBar{flex:1;height:20px;background:#222;border-radius:20px;overflow:hidden;}
+.xpFill{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#3b82f6);transition:1s;}
+
+.cardsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px;}
+.card{background:var(--card);border-radius:20px;padding:25px;text-align:center;transition:.35s;cursor:pointer;box-shadow:0 8px 25px rgba(0,0,0,.20);}
+.card:hover{transform:translateY(-8px);background:var(--card2);}
+.card h3{margin-top:10px;color:#b8c0cc;font-weight:500;}
+.card h2{margin-top:8px;font-size:28px;}
+.emoji{font-size:42px;}
+.action{font-size:22px;font-weight:600;min-height:150px;display:flex;justify-content:center;align-items:center;flex-direction:column;}
+.action:hover{background:linear-gradient(135deg,#2563eb,#22c55e);}
+
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:#3b82f6;border-radius:20px;}
+::-webkit-scrollbar-track{background:#111827;}
+
+/* PÁGINAS INTERNAS */
+.pagina{display:flex;flex-direction:column;animation:fadeUp .5s;padding-top:25px;max-width:480px;margin:0 auto;width:100%;padding-left:30px;padding-right:30px;}
+.subtitulo{color:#9ca3af;margin-top:10px;margin-bottom:30px;font-size:16px;}
+.botaoVoltar{margin-top:25px;width:180px;padding:14px;border:none;border-radius:14px;background:#374151;color:white;font-size:16px;cursor:pointer;transition:.3s;}
+.botaoVoltar:hover{background:#4b5563;transform:translateY(-3px);}
+
+.materia{min-height:230px;transition:.35s;}
+.materia h2{margin-top:18px;}
+.materia p{margin-top:12px;line-height:24px;color:#cbd5e1;}
+.materia:hover{background:linear-gradient(135deg,#2563eb,#1d4ed8);transform:translateY(-8px) scale(1.02);}
+
+.dificuldade{min-height:220px;}
+.dificuldade:nth-child(1){border-top:6px solid #22c55e;}
+.dificuldade:nth-child(2){border-top:6px solid #f59e0b;}
+.dificuldade:nth-child(3){border-top:6px solid #ef4444;}
+.dificuldade:hover{transform:scale(1.04);}
+
+.modo{min-height:230px;}
+.modo:hover{background:linear-gradient(135deg,#8b5cf6,#3b82f6);}
+
+@media(max-width:768px){
+  .cardsGrid{grid-template-columns:1fr;}
+  .botaoVoltar{width:100%;}
+}
+
+/* QUIZ */
+.quizContainer{background:var(--card);padding:30px;border-radius:25px;box-shadow:0 12px 35px rgba(0,0,0,.30);animation:fadeUp .5s;}
+.quizHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;flex-wrap:wrap;gap:20px;}
+.quizNivel{background:#2563eb;padding:10px 18px;border-radius:30px;font-weight:600;}
+.progressArea{margin-bottom:25px;}
+.progressBar{height:14px;background:#20252d;border-radius:20px;overflow:hidden;margin-bottom:10px;}
+.progressFill{height:100%;width:10%;background:linear-gradient(90deg,#22c55e,#3b82f6);transition:.5s;}
+.quizStats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:30px;}
+.stat{background:#1f2937;padding:15px;border-radius:16px;text-align:center;font-size:22px;font-weight:bold;}
+.questionCard{background:#111827;padding:30px;border-radius:20px;margin-bottom:25px;}
+.questionNumber{font-size:15px;color:#9ca3af;margin-bottom:15px;}
+.questionCard h2{line-height:1.7;font-size:24px;}
+.alternativas{display:grid;gap:15px;}
+.alternativa{padding:18px;border:none;border-radius:15px;background:#1f2937;color:white;font-size:17px;cursor:pointer;transition:.25s;text-align:left;}
+.alternativa:hover{background:#2563eb;transform:translateX(6px);}
+.alternativa:disabled{cursor:not-allowed;}
+.explicacao{margin-top:30px;padding:25px;border-radius:20px;background:#0f172a;border-left:6px solid #22c55e;}
+.btnPrincipal{padding:16px 35px;border:none;border-radius:16px;background:linear-gradient(90deg,#22c55e,#2563eb);color:white;font-size:18px;cursor:pointer;transition:.3s;}
+.btnPrincipal:hover{transform:scale(1.05);}
+@media(max-width:768px){
+  .quizStats{grid-template-columns:repeat(2,1fr);}
+  .questionCard h2{font-size:20px;}
+}
+
+/* RANKING */
+.rankItem{display:flex;justify-content:space-between;padding:16px 20px;background:#1f2937;border-radius:14px;font-size:16px;}
+.rankVoce{background:linear-gradient(90deg,#22c55e,#3b82f6);font-weight:700;color:#fff;}
+
+/* CONQUISTAS */
+.badgeLocked{opacity:.45;filter:grayscale(100%);}
+
+/* TEMA CLARO (Configurações) */
+body.temaClaro{background:#f3f4f6;color:#111827;}
+body.temaClaro .card,body.temaClaro .quizContainer,body.temaClaro .profileCard,
+body.temaClaro .questionCard,body.temaClaro header,body.temaClaro .sidebar,
+body.temaClaro .loginCard{background:#ffffff;color:#111827;box-shadow:0 8px 20px rgba(0,0,0,.08);}
+body.temaClaro .alternativa,body.temaClaro .stat,body.temaClaro .rankItem{background:#e5e7eb;color:#111827;}
+body.temaClaro .explicacao{background:#eef2ff;color:#111827;}
+body.temaClaro .subtitulo{color:#4b5563;}
+body.temaClaro .card h3{color:#4b5563;}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="logo">🎓</div>
+  <div class="nomeApp">RevisApp</div>
+  <div class="slogan">Aprenda • Revise • Evolua</div>
+  <div class="loader"><span></span></div>
+</div>
+
+<!-- LOGIN -->
+<section id="login">
+  <div class="loginCard">
+    <h1>🎓 RevisApp</h1>
+    <input type="text" id="usuario" placeholder="Usuário" value="Matheus Gomes">
+    <input type="password" id="senha" placeholder="Senha" value="123">
+    <button onclick="entrar()">Entrar</button>
+    <div class="demo">
+      Login fictício<br><br>
+      Usuário: <b>Matheus Gomes</b><br>
+      Senha: <b>123</b>
+    </div>
+  </div>
+</section>
+
+<div class="overlay" id="overlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <h2>📚 RevisApp</h2>
+  <ul>
+    <li onclick="voltarHome()">🏠 Home</li>
+    <li onclick="abrirPerfil()">👤 Perfil</li>
+    <li onclick="abrirMissoes()">🎯 Missões</li>
+    <li onclick="abrirRanking()">🏆 Ranking</li>
+    <li onclick="abrirRevisarErrosGeral()">📖 Revisar Erros</li>
+    <li onclick="abrirSimuladoGeral()">📝 Simulados</li>
+    <li onclick="abrirLoja()">🛒 Loja</li>
+    <li onclick="abrirConquistas()">🎖 Conquistas</li>
+    <li onclick="abrirConfiguracoes()">⚙ Configurações</li>
+    <li onclick="sair()">🚪 Sair</li>
+  </ul>
+</nav>
+
+<div id="app">
+<header>
+  <div class="menu" onclick="abrirMenu()">☰</div>
+  <h2>📚 RevisApp</h2>
+  <div class="user">
+    <div class="avatar">👨</div>
+    <div><b id="nomeHeader">Matheus</b><br><small id="patenteHeader">Iniciante</small></div>
+  </div>
+</header>
+
+<div class="container">
+  <h1>👋 Bem-vindo(a), Matheus!</h1>
+  <p style="margin-top:10px;color:#9ca3af;">Continue estudando para evoluir sua patente.</p>
+  <br>
+
+  <div class="profileCard">
+    <h2>👤 Perfil</h2>
+    <br>
+    <p><strong>Nome:</strong> <span id="nomeProfile">Matheus Gomes</span></p>
+    <p><strong>Patente:</strong> <span id="patenteTexto">🥉 Iniciante</span></p>
+    <p><strong>Nível:</strong> <span id="nivelTexto">1</span></p>
+    <p><strong>XP:</strong> <span id="xpNumTexto">0 / 100</span></p>
+    <br>
+    <div class="xpArea">
+      <div class="xpBar"><div class="xpFill" id="xpFill"></div></div>
+      <span id="xpTexto">0%</span>
+    </div>
+  </div>
+  <br>
+
+  <div class="cardsGrid">
+    <div class="card"><div class="emoji">🪙</div><h3>Moedas</h3><h2 id="coins">0</h2></div>
+    <div class="card"><div class="emoji">💎</div><h3>Gemas</h3><h2 id="gems">0</h2></div>
+    <div class="card"><div class="emoji">🏅</div><h3>Medalhas</h3><h2 id="medals">0</h2></div>
+    <div class="card"><div class="emoji">🔥</div><h3>Sequência</h3><h2 id="streakDias">0 dias</h2></div>
+    <div class="card"><div class="emoji">❤️</div><h3>Vidas</h3><h2>❤️❤️❤️</h2></div>
+    <div class="card"><div class="emoji">⭐</div><h3>Patente</h3><h2 id="patenteCard">Iniciante</h2></div>
+  </div>
+
+  <br><br>
+  <h2>🚀 Começar uma Revisão</h2>
+  <br>
+  <div class="cardsGrid">
+    <div class="card action">📘<br><br>Ensino Fundamental I</div>
+    <div class="card action">📗<br><br>Ensino Fundamental II</div>
+    <div class="card action">🎓<br><br>Ensino Médio</div>
+    <div class="card action">📝<br><br>ENEM</div>
+    <div class="card action">🏛<br><br>Vestibulares</div>
+    <div class="card action">📚<br><br>Concursos</div>
+  </div>
+</div>
+</div><!-- fim #app -->
+
+<!-- TELAS DO SISTEMA -->
+<div id="telasSistema" style="display:none;">
+
+<section id="telaMaterias" class="pagina">
+  <h1>📚 Escolha uma Matéria</h1>
+  <p class="subtitulo">Selecione a disciplina que deseja revisar.</p>
+  <div class="cardsGrid">
+    <div class="card materia" onclick="abrirDificuldade('Matemática')"><div class="emoji">📐</div><h2>Matemática</h2><p>Álgebra, Geometria, Estatística e mais.</p></div>
+    <div class="card materia" onclick="abrirDificuldade('Português')"><div class="emoji">📖</div><h2>Português</h2><p>Gramática, Interpretação e Literatura.</p></div>
+    <div class="card materia" onclick="abrirDificuldade('História')"><div class="emoji">🏛</div><h2>História</h2><p>Brasil, Geral e Atualidades.</p></div>
+    <div class="card materia" onclick="abrirDificuldade('Geografia')"><div class="emoji">🌎</div><h2>Geografia</h2><p>Física, Humana e Cartografia.</p></div>
+    <div class="card materia" onclick="abrirDificuldade('Ciências')"><div class="emoji">🔬</div><h2>Ciências</h2><p>Biologia, Física e Química.</p></div>
+    <div class="card materia" onclick="abrirDificuldade('Inglês')"><div class="emoji">🇺🇸</div><h2>Inglês</h2><p>Vocabulário e Interpretação.</p></div>
+  </div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<section id="telaDificuldade" class="pagina" style="display:none;">
+  <h1 id="tituloMateria">Matéria</h1>
+  <p class="subtitulo">Escolha o nível de dificuldade.</p>
+  <div class="cardsGrid">
+    <div class="card dificuldade" onclick="abrirModo('Fácil')"><div class="emoji">🟢</div><h2>Fácil</h2><p>Questões introdutórias.</p></div>
+    <div class="card dificuldade" onclick="abrirModo('Médio')"><div class="emoji">🟡</div><h2>Médio</h2><p>Maior interpretação.</p></div>
+    <div class="card dificuldade" onclick="abrirModo('Difícil')"><div class="emoji">🔴</div><h2>Difícil</h2><p>Questões desafiadoras.</p></div>
+  </div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarMaterias()">⬅ Voltar</button>
+</section>
+
+<section id="telaModo" class="pagina" style="display:none;">
+  <h1>🎮 Escolha o Modo</h1>
+  <p class="subtitulo">Como deseja estudar hoje?</p>
+  <div class="cardsGrid">
+    <div class="card modo" onclick="iniciarQuiz()"><div class="emoji">📚</div><h2>Estudo Livre</h2><p>Questões sem limite de tempo.</p></div>
+    <div class="card modo" onclick="iniciarQuiz()"><div class="emoji">⚡</div><h2>Desafio Relâmpago</h2><p>Tempo reduzido.</p></div>
+    <div class="card modo" onclick="iniciarQuiz()"><div class="emoji">📝</div><h2>Simulado</h2><p>Prova completa.</p></div>
+    <div class="card modo" onclick="iniciarRevisaoErros()"><div class="emoji">🎯</div><h2>Revisar Erros</h2><p>Refaça questões erradas.</p></div>
+  </div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarDificuldade()">⬅ Voltar</button>
+</section>
+
+</div><!-- fim telasSistema -->
+
+<!-- TELA DO QUIZ -->
+<section id="telaQuiz" class="pagina" style="display:none;">
+<div class="quizContainer">
+  <div class="quizHeader">
+    <div>
+      <h1 id="quizMateria">📚 Matemática</h1>
+      <p id="quizInfo">Fácil • Estudo Livre</p>
+    </div>
+    <div class="quizNivel">⭐ Nível 1</div>
+  </div>
+
+  <div class="progressArea">
+    <div class="progressBar"><div class="progressFill" id="quizProgress"></div></div>
+    <span id="progressTexto">Questão 1 de 10</span>
+  </div>
+
+  <div class="quizStats">
+    <div class="stat">❤️ <span id="vidasQuiz">3</span></div>
+    <div class="stat">🪙 <span id="moedasQuiz">0</span></div>
+    <div class="stat">⭐ <span id="xpQuiz">0 XP</span></div>
+    <div class="stat">🔥 <span id="sequenciaQuiz">0</span></div>
+  </div>
+
+  <div class="questionCard">
+    <div class="questionNumber">Questão <span id="numeroQuestao">1</span></div>
+    <h2 id="perguntaQuiz">Aqui aparecerá a pergunta.</h2>
+  </div>
+
+  <div class="alternativas" id="alternativasQuiz">
+    <button class="alternativa">Alternativa A</button>
+    <button class="alternativa">Alternativa B</button>
+    <button class="alternativa">Alternativa C</button>
+    <button class="alternativa">Alternativa D</button>
+  </div>
+
+  <div id="explicacaoQuiz" class="explicacao" style="display:none;">
+    <h3>💡 Explicação</h3>
+    <p id="textoExplicacao">Explicação da questão.</p>
+  </div>
+
+  <div style="margin-top:30px;text-align:center;">
+    <button id="btnProximaQuestao" class="btnPrincipal" style="display:none;">Próxima Questão →</button>
+  </div>
+</div>
+</section>
+
+<!-- PERFIL -->
+<section id="telaPerfil" class="pagina" style="display:none;">
+  <h1>👤 Meu Perfil</h1>
+  <p class="subtitulo">Acompanhe sua evolução no RevisApp.</p>
+  <div class="profileCard">
+    <p><strong>Nome:</strong> <span id="perfilNome"></span></p><br>
+    <p><strong>Patente:</strong> <span id="perfilPatente"></span></p><br>
+    <p><strong>Nível:</strong> <span id="perfilNivel"></span></p><br>
+    <p><strong>XP:</strong> <span id="perfilXP"></span></p>
+  </div>
+  <br>
+  <div class="cardsGrid">
+    <div class="card"><div class="emoji">🪙</div><h3>Moedas</h3><h2 id="perfilMoedas">0</h2></div>
+    <div class="card"><div class="emoji">💎</div><h3>Gemas</h3><h2 id="perfilGemas">0</h2></div>
+    <div class="card"><div class="emoji">🏅</div><h3>Medalhas</h3><h2 id="perfilMedalhas">0</h2></div>
+    <div class="card"><div class="emoji">✅</div><h3>Quizzes Completos</h3><h2 id="perfilQuizzes">0</h2></div>
+    <div class="card"><div class="emoji">📈</div><h3>Melhor Aproveitamento</h3><h2 id="perfilMelhor">0%</h2></div>
+    <div class="card"><div class="emoji">🔥</div><h3>Maior Sequência</h3><h2 id="perfilSequencia">0</h2></div>
+  </div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<!-- MISSÕES -->
+<section id="telaMissoes" class="pagina" style="display:none;">
+  <h1>🎯 Missões Diárias</h1>
+  <p class="subtitulo">Complete missões e ganhe recompensas!</p>
+  <div id="listaMissoes" style="display:flex;flex-direction:column;gap:20px;"></div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<!-- RANKING -->
+<section id="telaRanking" class="pagina" style="display:none;">
+  <h1>🏆 Ranking</h1>
+  <p class="subtitulo">Veja como você está em relação aos outros estudantes.</p>
+  <div class="quizContainer">
+    <div id="listaRanking" style="display:flex;flex-direction:column;gap:12px;"></div>
+  </div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<!-- REVISAR ERROS (GERAL) -->
+<section id="telaRevisarErros" class="pagina" style="display:none;">
+  <h1>📖 Revisar Erros</h1>
+  <p class="subtitulo">Refaça as questões que você errou até acertar.</p>
+  <div id="listaErrosGeral" style="display:flex;flex-direction:column;gap:20px;"></div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<!-- LOJA -->
+<section id="telaLoja" class="pagina" style="display:none;">
+  <h1>🛒 Loja</h1>
+  <p class="subtitulo">Use suas moedas e gemas para comprar itens.</p>
+  <div class="cardsGrid">
+    <div class="card">
+      <div class="emoji">❤️</div><h3>Vida Extra</h3>
+      <p style="margin:10px 0;color:#9ca3af;">+1 vida no próximo quiz</p>
+      <h2>🪙 50</h2><br>
+      <button class="btnPrincipal" onclick="comprarItem('vida',50,'moedas')">Comprar</button>
+    </div>
+    <div class="card">
+      <div class="emoji">⭐</div><h3>XP em Dobro</h3>
+      <p style="margin:10px 0;color:#9ca3af;">Dobra o XP do próximo quiz</p>
+      <h2>💎 8</h2><br>
+      <button class="btnPrincipal" onclick="comprarItem('xp2x',8,'gemas')">Comprar</button>
+    </div>
+    <div class="card">
+      <div class="emoji">🟣</div><h3>Tema Roxo</h3>
+      <p style="margin:10px 0;color:#9ca3af;">Muda a cor de destaque do app</p>
+      <h2>🪙 100</h2><br>
+      <button class="btnPrincipal" onclick="comprarItem('temaRoxo',100,'moedas')">Comprar</button>
+    </div>
+    <div class="card">
+      <div class="emoji">🩷</div><h3>Tema Rosa</h3>
+      <p style="margin:10px 0;color:#9ca3af;">Muda a cor de destaque do app</p>
+      <h2>🪙 100</h2><br>
+      <button class="btnPrincipal" onclick="comprarItem('temaRosa',100,'moedas')">Comprar</button>
+    </div>
+  </div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<!-- CONQUISTAS -->
+<section id="telaConquistas" class="pagina" style="display:none;">
+  <h1>🎖 Conquistas</h1>
+  <p class="subtitulo">Desbloqueie conquistas conforme você evolui.</p>
+  <div class="cardsGrid" id="gridConquistas"></div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<!-- CONFIGURAÇÕES -->
+<section id="telaConfiguracoes" class="pagina" style="display:none;">
+  <h1>⚙ Configurações</h1>
+  <p class="subtitulo">Personalize sua experiência no RevisApp.</p>
+  <div class="profileCard">
+    <p><strong>Nome de usuário</strong></p>
+    <input type="text" id="inputNome" style="width:100%;padding:14px;margin-top:10px;border:none;border-radius:12px;background:#1f2937;color:white;font-size:15px;">
+    <button class="btnPrincipal" style="margin-top:15px;" onclick="salvarNome()">Salvar Nome</button>
+    <br><br><hr style="border-color:#2d3340;">
+    <br>
+    <p><strong>🌙 Tema Escuro</strong></p>
+    <button class="btnPrincipal" style="margin-top:10px;" onclick="alternarTema()">Alternar Tema</button>
+    <br><br>
+    <p><strong>🔊 Som:</strong> <span id="somStatus">Ativado 🔊</span></p>
+    <button class="btnPrincipal" style="margin-top:10px;" onclick="alternarSom()">Alternar Som</button>
+    <br><br><hr style="border-color:#2d3340;">
+    <br>
+    <button class="botaoVoltar" style="background:#ef4444;" onclick="sair()">🚪 Sair da Conta</button>
+  </div>
+  <br>
+  <button class="botaoVoltar" onclick="voltarHome()">⬅ Voltar</button>
+</section>
+
+<script>
+/*=========================================
+ESTADO GLOBAL
+=========================================*/
+let nomeUsuario = "Matheus Gomes";
+let nivel = 1;
+let xpAtual = 68;
+let diasSequencia = 0;
+let vidasExtras = 0;
+let multiplicadorXP = false;
+let quizzesCompletos = 0;
+let melhorAproveitamento = 0;
+let maiorSequenciaGeral = 0;
+let questoesRespondidasHoje = 0;
+let errosAcumulados = []; // {materia,dificuldade,pergunta,alternativas,correta,explicacao}
+let missoesResgatadas = { m1:false, m2:false, m3:false };
+let somAtivado = true;
+let temaEscuro = true;
+let ultimoPoolQuiz = [];
+
+/*=========================================
+SPLASH
+=========================================*/
+window.onload=function(){
+  setTimeout(function(){
+    document.getElementById("login").style.display="flex";
+  },3800);
+}
+
+/*=========================================
+LOGIN
+=========================================*/
+function entrar(){
+  let usuario=document.getElementById("usuario").value;
+  let senha=document.getElementById("senha").value;
+  if(usuario===""||senha===""){
+    alert("Preencha usuário e senha.");
+    return;
+  }
+  nomeUsuario = usuario;
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
+  document.getElementById("nomeHeader").innerHTML = nomeUsuario.split(" ")[0];
+  document.getElementById("nomeProfile").innerHTML = nomeUsuario;
+  atualizarPatente();
+  animarXP();
+  document.getElementById("streakDias").innerHTML = diasSequencia+" dias";
+  setTimeout(function(){
+    document.getElementById("coins").innerHTML=moedas;
+    document.getElementById("gems").innerHTML=gemas;
+    document.getElementById("medals").innerHTML=medalhas;
+  },800);
+}
+
+/*=========================================
+MENU
+=========================================*/
+function abrirMenu(){
+  document.getElementById("sidebar").classList.add("active");
+  document.getElementById("overlay").classList.add("active");
+}
+function fecharMenu(){
+  document.getElementById("sidebar").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+}
+document.getElementById("overlay").onclick=fecharMenu;
+
+/*=========================================
+XP / PATENTE
+=========================================*/
+function animarXP(){
+  document.getElementById("xpFill").style.width = xpAtual+"%";
+  document.getElementById("xpTexto").innerHTML = xpAtual+"%";
+  document.getElementById("nivelTexto").innerHTML = nivel;
+  document.getElementById("xpNumTexto").innerHTML = xpAtual+" / 100";
+}
+
+function obterPatente(){
+  if(nivel<3) return "🥉 Iniciante";
+  if(nivel<6) return "🥈 Intermediário";
+  if(nivel<10) return "🥇 Avançado";
+  return "👑 Mestre";
+}
+
+function atualizarPatente(){
+  let p = obterPatente();
+  document.getElementById("patenteTexto").innerHTML = p;
+  document.getElementById("patenteHeader").innerHTML = p.split(" ")[1];
+  document.getElementById("patenteCard").innerHTML = p.split(" ")[1];
+  document.getElementById("nivelTexto").innerHTML = nivel;
+}
+
+function atualizarRecursos(){
+  document.getElementById("coins").innerHTML=moedas;
+  document.getElementById("gems").innerHTML=gemas;
+  document.getElementById("medals").innerHTML=medalhas;
+}
+
+/*=========================================
+MOEDAS / GEMAS / MEDALHAS INICIAIS
+=========================================*/
+let moedas=250;
+let gemas=18;
+let medalhas=6;
+
+/*==================================================
+NAVEGAÇÃO ENTRE TELAS
+==================================================*/
+let materiaSelecionada = "";
+let dificuldadeSelecionada = "";
+let modoSelecionado = "";
+
+function esconderTudo(){
+  document.querySelector(".container").style.display="none";
+  document.getElementById("telasSistema").style.display="none";
+  document.getElementById("telaQuiz").style.display="none";
+  document.getElementById("telaPerfil").style.display="none";
+  document.getElementById("telaMissoes").style.display="none";
+  document.getElementById("telaRanking").style.display="none";
+  document.getElementById("telaRevisarErros").style.display="none";
+  document.getElementById("telaLoja").style.display="none";
+  document.getElementById("telaConquistas").style.display="none";
+  document.getElementById("telaConfiguracoes").style.display="none";
+  let resultado = document.getElementById("resultadoFinal");
+  if(resultado){ resultado.style.display="none"; }
+  fecharMenu();
+}
+
+function abrirMaterias(){
+  esconderTudo();
+  document.getElementById("telasSistema").style.display="block";
+  document.getElementById("telaMaterias").style.display="flex";
+  document.getElementById("telaDificuldade").style.display="none";
+  document.getElementById("telaModo").style.display="none";
+}
+
+function voltarHome(){
+  esconderTudo();
+  document.querySelector(".container").style.display="block";
+}
+
+function abrirDificuldade(nome){
+  materiaSelecionada = nome;
+  document.getElementById("tituloMateria").innerHTML = "📘 " + nome;
+  document.getElementById("telaMaterias").style.display="none";
+  document.getElementById("telaDificuldade").style.display="flex";
+}
+
+function voltarMaterias(){
+  document.getElementById("telaMaterias").style.display="flex";
+  document.getElementById("telaDificuldade").style.display="none";
+  document.getElementById("telaModo").style.display="none";
+}
+
+function abrirModo(nivelEscolhido){
+  dificuldadeSelecionada = nivelEscolhido;
+  document.getElementById("telaDificuldade").style.display="none";
+  document.getElementById("telaModo").style.display="flex";
+}
+
+function voltarDificuldade(){
+  document.getElementById("telaModo").style.display="none";
+  document.getElementById("telaDificuldade").style.display="flex";
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  const cards=document.querySelectorAll(".action");
+  cards.forEach(card=>{
+    card.addEventListener("click",abrirMaterias);
+  });
+});
+
+document.querySelectorAll(".card").forEach(card=>{
+  card.addEventListener("mouseenter",()=>{
+    card.style.boxShadow="0 18px 35px rgba(59,130,246,.35)";
+  });
+  card.addEventListener("mouseleave",()=>{
+    card.style.boxShadow="0 8px 25px rgba(0,0,0,.20)";
+  });
+});
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="Escape"){
+    fecharMenu();
+  }
+});
+
+/*====================================================
+BANCO DE QUESTÕES (6 matérias x 3 dificuldades)
+====================================================*/
+const bancoQuestoes = {
+  "Matemática":{
+    "Fácil":[
+      { pergunta:"Uma papelaria vende cadernos por R$ 18,00 cada. Quanto custam 3 cadernos?",
+        alternativas:["R$ 48,00","R$ 54,00","R$ 60,00","R$ 72,00"], correta:1,
+        explicacao:"18 × 3 = 54." },
+      { pergunta:"Quanto é 25% de 200?",
+        alternativas:["25","40","50","75"], correta:2,
+        explicacao:"25% corresponde à quarta parte de 200, ou seja, 50." },
+      { pergunta:"Um ônibus possui 42 passageiros. Na próxima parada entram mais 18. Quantos passageiros haverá no ônibus?",
+        alternativas:["50","58","60","64"], correta:2,
+        explicacao:"42 + 18 = 60." },
+      { pergunta:"Qual é a metade de 84?",
+        alternativas:["40","42","44","46"], correta:1,
+        explicacao:"84 ÷ 2 = 42." },
+      { pergunta:"Quanto é 7 × 8?",
+        alternativas:["54","56","58","64"], correta:1,
+        explicacao:"7 × 8 = 56." },
+      { pergunta:"Se um metro de tecido custa R$ 12,00, quanto custam 5 metros?",
+        alternativas:["R$ 50,00","R$ 55,00","R$ 60,00","R$ 65,00"], correta:2,
+        explicacao:"12 × 5 = 60." }
+    ],
+    "Médio":[
+      { pergunta:"Resolva: 3x + 5 = 20.",
+        alternativas:["x = 3","x = 5","x = 7","x = 10"], correta:1,
+        explicacao:"3x = 15 → x = 5." },
+      { pergunta:"Qual é a área de um retângulo com lados 8 cm e 5 cm?",
+        alternativas:["13 cm²","26 cm²","40 cm²","45 cm²"], correta:2,
+        explicacao:"Área = base × altura = 8 × 5 = 40 cm²." },
+      { pergunta:"Qual porcentagem corresponde à fração 3/4?",
+        alternativas:["50%","65%","75%","80%"], correta:2,
+        explicacao:"3 ÷ 4 = 0,75, ou seja, 75%." },
+      { pergunta:"Qual é o valor de 2² + 3³?",
+        alternativas:["17","23","31","36"], correta:2,
+        explicacao:"2² = 4 e 3³ = 27; 4 + 27 = 31." },
+      { pergunta:"Uma torneira enche um tanque em 6 horas. Que fração do tanque ela enche em 1 hora?",
+        alternativas:["1/4","1/5","1/6","1/8"], correta:2,
+        explicacao:"Se leva 6 horas para encher tudo, em 1 hora enche 1/6." },
+      { pergunta:"Um produto de R$ 80,00 tem desconto de 15%. Qual é o valor final?",
+        alternativas:["R$ 65,00","R$ 68,00","R$ 70,00","R$ 72,00"], correta:1,
+        explicacao:"15% de 80 = 12; 80 − 12 = 68." }
+    ],
+    "Difícil":[
+      { pergunta:"Uma PA possui primeiro termo 8 e razão 5. Qual é o sexto termo?",
+        alternativas:["28","30","33","35"], correta:2,
+        explicacao:"a6 = 8 + 5×5 = 33." },
+      { pergunta:"Quais são as raízes da equação x² − 5x + 6 = 0?",
+        alternativas:["1 e 6","2 e 3","−2 e −3","2 e 4"], correta:1,
+        explicacao:"Fatorando: (x−2)(x−3)=0, logo x=2 ou x=3." },
+      { pergunta:"Qual é o valor de log₂(32)?",
+        alternativas:["4","5","6","8"], correta:1,
+        explicacao:"2⁵ = 32, logo log₂(32) = 5." },
+      { pergunta:"Em uma PG de razão 3 e primeiro termo 2, qual é o quarto termo?",
+        alternativas:["18","36","54","81"], correta:2,
+        explicacao:"a4 = 2 × 3³ = 2 × 27 = 54." },
+      { pergunta:"Qual é a probabilidade de tirar um número par ao lançar um dado de 6 faces?",
+        alternativas:["1/6","1/3","1/2","2/3"], correta:2,
+        explicacao:"Há 3 números pares (2,4,6) em 6 possibilidades: 3/6 = 1/2." },
+      { pergunta:"Qual é a derivada de f(x) = x³?",
+        alternativas:["x²","2x²","3x²","3x³"], correta:2,
+        explicacao:"Pela regra do tombo, a derivada de xⁿ é n·x^(n−1), logo 3x²." }
+    ]
+  },
+  "Português":{
+    "Fácil":[
+      { pergunta:"Qual palavra está escrita corretamente?",
+        alternativas:["Excessão","Exceção","Exsesão","Exeção"], correta:1,
+        explicacao:"A grafia correta é 'Exceção'." },
+      { pergunta:"Qual é o plural de 'cidadão'?",
+        alternativas:["Cidadãos","Cidadões","Cidadães","Cidadãoses"], correta:0,
+        explicacao:"O plural correto é 'cidadãos'." },
+      { pergunta:"Qual é a classe gramatical da palavra 'rapidamente'?",
+        alternativas:["Substantivo","Adjetivo","Advérbio","Verbo"], correta:2,
+        explicacao:"Palavras terminadas em '-mente' geralmente são advérbios de modo." },
+      { pergunta:"Assinale o antônimo de 'feliz'.",
+        alternativas:["Alegre","Contente","Triste","Animado"], correta:2,
+        explicacao:"'Triste' é o antônimo de 'feliz'." },
+      { pergunta:"Qual é o plural de 'pão'?",
+        alternativas:["Pãos","Pães","Pões","Paens"], correta:1,
+        explicacao:"O plural de 'pão' é 'pães'." },
+      { pergunta:"Em 'Ela comprou um livro', qual é o sujeito?",
+        alternativas:["Comprou","Um livro","Ela","Livro"], correta:2,
+        explicacao:"'Ela' é quem pratica a ação, portanto é o sujeito." }
+    ],
+    "Médio":[
+      { pergunta:"Qual figura de linguagem aparece em 'Seus olhos são dois sóis'?",
+        alternativas:["Metonímia","Metáfora","Hipérbole","Ironia"], correta:1,
+        explicacao:"Há uma comparação implícita entre os olhos e o sol, característica da metáfora." },
+      { pergunta:"Qual é o sujeito da oração 'Fomos ao cinema ontem'?",
+        alternativas:["Cinema","Ontem","Nós (oculto)","Não há sujeito"], correta:2,
+        explicacao:"O verbo está na 1ª pessoa do plural, indicando sujeito oculto 'nós'." },
+      { pergunta:"Assinale a forma correta.",
+        alternativas:["Fazem dois anos que ele viajou.","Faz dois anos que ele viajou.","As duas estão certas.","Nenhuma está certa."], correta:1,
+        explicacao:"O verbo 'fazer' indicando tempo é impessoal e fica sempre na 3ª pessoa do singular." },
+      { pergunta:"Qual é o tipo de sujeito em 'Choveu muito ontem'?",
+        alternativas:["Sujeito simples","Sujeito composto","Sujeito oculto","Oração sem sujeito"], correta:3,
+        explicacao:"Verbos que indicam fenômenos da natureza são impessoais, não possuindo sujeito." },
+      { pergunta:"Qual oração apresenta uma subordinada adverbial condicional?",
+        alternativas:["Estudei porque tinha prova.","Se chover, não sairemos.","Ela correu como o vento.","Quando cheguei, todos saíram."], correta:1,
+        explicacao:"A conjunção 'se' introduz uma condição, típica da oração condicional." },
+      { pergunta:"Qual conectivo indica ideia de oposição?",
+        alternativas:["Portanto","Porque","Mas","E"], correta:2,
+        explicacao:"'Mas' é uma conjunção adversativa, que indica oposição ou contraste." }
+    ],
+    "Difícil":[
+      { pergunta:"Em 'O menino ficou triste', qual é a função sintática de 'triste'?",
+        alternativas:["Objeto direto","Predicativo do sujeito","Adjunto adnominal","Complemento nominal"], correta:1,
+        explicacao:"'Triste' qualifica o sujeito através do verbo de ligação 'ficou', sendo predicativo do sujeito." },
+      { pergunta:"Qual é a regência correta do verbo 'preferir'?",
+        alternativas:["Prefiro futebol do que vôlei.","Prefiro futebol a vôlei.","Prefiro mais futebol que vôlei.","Prefiro futebol em vez de vôlei."], correta:1,
+        explicacao:"O verbo 'preferir' exige a preposição 'a', sem uso de 'do que' ou 'mais'." },
+      { pergunta:"Qual figura de linguagem está presente em 'O vento sussurrava segredos entre as árvores'?",
+        alternativas:["Metáfora","Prosopopeia (personificação)","Antítese","Eufemismo"], correta:1,
+        explicacao:"Atribuir uma ação humana (sussurrar) ao vento é uma personificação/prosopopeia." },
+      { pergunta:"Assinale a concordância correta: 'A maioria dos alunos ___ a prova.'",
+        alternativas:["terminou","terminaram","tinha terminado e terminaram","terminarão"], correta:0,
+        explicacao:"Com expressões partitivas como 'a maioria de', a concordância pode ser feita no singular, concordando com 'maioria'." },
+      { pergunta:"Qual é a colocação pronominal correta em início de frase?",
+        alternativas:["Me chame mais tarde.","Chame-me mais tarde.","Chame me mais tarde.","Mim chame mais tarde."], correta:1,
+        explicacao:"Não se inicia frase com pronome oblíquo átono em português formal; o correto é a ênclise: 'Chame-me'." },
+      { pergunta:"O movimento literário marcado pela valorização do 'eu lírico', subjetivismo e nacionalismo no Brasil foi:",
+        alternativas:["Barroco","Arcadismo","Romantismo","Parnasianismo"], correta:2,
+        explicacao:"O Romantismo brasileiro valorizou o subjetivismo, a emoção e o nacionalismo." }
+    ]
+  },
+  "História":{
+    "Fácil":[
+      { pergunta:"Em que ano ocorreu a Independência do Brasil?",
+        alternativas:["1500","1822","1889","1808"], correta:1,
+        explicacao:"A Independência do Brasil ocorreu em 1822." },
+      { pergunta:"Em que ano foi Proclamada a República no Brasil?",
+        alternativas:["1822","1888","1889","1891"], correta:2,
+        explicacao:"A Proclamação da República ocorreu em 15 de novembro de 1889." },
+      { pergunta:"Quem foi o primeiro presidente do Brasil?",
+        alternativas:["Dom Pedro II","Deodoro da Fonseca","Getúlio Vargas","Floriano Peixoto"], correta:1,
+        explicacao:"Marechal Deodoro da Fonseca foi o primeiro presidente do Brasil." },
+      { pergunta:"Em que século ocorreu o 'descobrimento' do Brasil pelos portugueses?",
+        alternativas:["XIV","XV","XVI","XVII"], correta:2,
+        explicacao:"O Brasil foi alcançado em 1500, no século XVI." },
+      { pergunta:"Qual lei aboliu a escravidão no Brasil, em 1888?",
+        alternativas:["Lei do Ventre Livre","Lei Áurea","Lei Eusébio de Queirós","Lei dos Sexagenários"], correta:1,
+        explicacao:"A Lei Áurea, assinada pela Princesa Isabel em 1888, aboliu a escravidão." },
+      { pergunta:"Quem foi Dom Pedro I?",
+        alternativas:["O último rei de Portugal","O primeiro imperador do Brasil","O primeiro presidente do Brasil","Um líder da Inconfidência Mineira"], correta:1,
+        explicacao:"Dom Pedro I proclamou a Independência e tornou-se o primeiro imperador do Brasil." }
+    ],
+    "Médio":[
+      { pergunta:"Em que ano teve início a Revolução Francesa?",
+        alternativas:["1776","1789","1804","1815"], correta:1,
+        explicacao:"A Revolução Francesa começou em 1789, com a Queda da Bastilha." },
+      { pergunta:"O período em que Getúlio Vargas governou o Brasil entre 1930 e 1945 é conhecido como:",
+        alternativas:["República Velha","Era Vargas","Nova República","Regime Militar"], correta:1,
+        explicacao:"Esse período é chamado de Era Vargas." },
+      { pergunta:"Em que ano terminou a Segunda Guerra Mundial?",
+        alternativas:["1939","1943","1945","1950"], correta:2,
+        explicacao:"A Segunda Guerra Mundial terminou em 1945." },
+      { pergunta:"Em que ano ocorreu o Golpe Militar no Brasil que iniciou a ditadura?",
+        alternativas:["1954","1961","1964","1968"], correta:2,
+        explicacao:"O golpe militar ocorreu em 1964." },
+      { pergunta:"A Revolução Industrial teve origem, no século XVIII, em qual país?",
+        alternativas:["França","Alemanha","Estados Unidos","Inglaterra"], correta:3,
+        explicacao:"A Revolução Industrial começou na Inglaterra." },
+      { pergunta:"A Guerra Fria foi um conflito ideológico principalmente entre quais blocos?",
+        alternativas:["França e Alemanha","Estados Unidos e União Soviética","Brasil e Argentina","China e Japão"], correta:1,
+        explicacao:"A Guerra Fria opôs o bloco capitalista (EUA) e o bloco socialista (URSS)." }
+    ],
+    "Difícil":[
+      { pergunta:"O Tratado de Tordesilhas (1494) dividiu as terras recém-descobertas entre quais países?",
+        alternativas:["Espanha e Inglaterra","Portugal e Espanha","Portugal e França","Espanha e Holanda"], correta:1,
+        explicacao:"O Tratado de Tordesilhas dividiu as terras entre Portugal e Espanha." },
+      { pergunta:"O Congresso de Viena (1814-1815) tinha como principal objetivo:",
+        alternativas:["Expandir o Império Napoleônico","Reorganizar a Europa após as guerras napoleônicas","Iniciar a Primeira Guerra Mundial","Abolir a monarquia europeia"], correta:1,
+        explicacao:"O Congresso de Viena buscou reorganizar as fronteiras e o equilíbrio de poder na Europa após Napoleão." },
+      { pergunta:"A Guerra do Paraguai (1864-1870) envolveu o Paraguai contra qual aliança?",
+        alternativas:["Tríplice Aliança (Brasil, Argentina, Uruguai)","Brasil e Bolívia","Argentina e Chile","Uruguai e Bolívia"], correta:0,
+        explicacao:"A Tríplice Aliança era formada por Brasil, Argentina e Uruguai." },
+      { pergunta:"A Revolta da Vacina (1904) no Rio de Janeiro foi uma reação popular a:",
+        alternativas:["Aumento de impostos","Vacinação obrigatória contra a varíola","Fim da escravidão","Golpe militar"], correta:1,
+        explicacao:"A revolta ocorreu contra a lei de vacinação obrigatória contra a varíola." },
+      { pergunta:"O Plano Real, que estabilizou a economia brasileira, foi implementado em qual década?",
+        alternativas:["1970","1980","1990","2000"], correta:2,
+        explicacao:"O Plano Real foi implementado em 1994, na década de 1990." },
+      { pergunta:"A atual Constituição brasileira, conhecida como 'Constituição Cidadã', foi promulgada em:",
+        alternativas:["1946","1967","1988","1998"], correta:2,
+        explicacao:"A Constituição de 1988 marcou a redemocratização do Brasil." }
+    ]
+  },
+  "Geografia":{
+    "Fácil":[
+      { pergunta:"Qual é o maior oceano do planeta?",
+        alternativas:["Atlântico","Índico","Pacífico","Ártico"], correta:2,
+        explicacao:"O Oceano Pacífico é o maior oceano do mundo." },
+      { pergunta:"Qual é a capital do Brasil?",
+        alternativas:["Rio de Janeiro","São Paulo","Brasília","Salvador"], correta:2,
+        explicacao:"Brasília é a capital federal do Brasil desde 1960." },
+      { pergunta:"Qual é o continente com o maior número de países?",
+        alternativas:["América","Ásia","Europa","África"], correta:3,
+        explicacao:"A África é o continente com maior número de países, mais de 50." },
+      { pergunta:"Qual é o maior país do mundo em extensão territorial?",
+        alternativas:["China","Canadá","Rússia","Estados Unidos"], correta:2,
+        explicacao:"A Rússia é o maior país do mundo em área territorial." },
+      { pergunta:"Qual linha imaginária divide a Terra nos hemisférios Norte e Sul?",
+        alternativas:["Meridiano de Greenwich","Linha do Equador","Trópico de Câncer","Trópico de Capricórnio"], correta:1,
+        explicacao:"A Linha do Equador divide o planeta em hemisfério Norte e Sul." },
+      { pergunta:"Com quantos países da América do Sul o Brasil faz fronteira?",
+        alternativas:["8","9","10","11"], correta:2,
+        explicacao:"O Brasil faz fronteira com 10 países sul-americanos." }
+    ],
+    "Médio":[
+      { pergunta:"O que são placas tectônicas?",
+        alternativas:["Camadas da atmosfera","Grandes blocos rígidos que formam a crosta terrestre","Correntes marítimas","Tipos de solo"], correta:1,
+        explicacao:"Placas tectônicas são blocos rígidos que compõem a litosfera e se movimentam lentamente." },
+      { pergunta:"Quantos fusos horários oficiais o Brasil possui atualmente?",
+        alternativas:["2","3","4","5"], correta:1,
+        explicacao:"O Brasil possui atualmente 3 fusos horários oficiais." },
+      { pergunta:"Qual é o principal bioma da região amazônica?",
+        alternativas:["Cerrado","Caatinga","Floresta Amazônica","Mata Atlântica"], correta:2,
+        explicacao:"A Floresta Amazônica é o bioma predominante na região Norte." },
+      { pergunta:"O processo de crescimento das cidades em relação ao campo é chamado de:",
+        alternativas:["Ruralização","Urbanização","Industrialização","Globalização"], correta:1,
+        explicacao:"Urbanização é o crescimento populacional e estrutural das áreas urbanas." },
+      { pergunta:"O IDH (Índice de Desenvolvimento Humano) mede principalmente:",
+        alternativas:["Apenas o PIB dos países","Renda, educação e expectativa de vida","Apenas taxa de natalidade","Extensão territorial"], correta:1,
+        explicacao:"O IDH combina indicadores de renda, educação e longevidade." },
+      { pergunta:"Qual característica marca o clima equatorial?",
+        alternativas:["Baixas temperaturas o ano todo","Chuvas escassas e clima seco","Altas temperaturas e chuvas abundantes o ano todo","Estações bem definidas"], correta:2,
+        explicacao:"O clima equatorial é quente e úmido durante todo o ano, com chuvas frequentes." }
+    ],
+    "Difícil":[
+      { pergunta:"O que é a Zona Econômica Exclusiva (ZEE) de um país?",
+        alternativas:["Território terrestre reservado à agricultura","Faixa marítima onde o país tem direitos exclusivos sobre recursos naturais","Área de livre comércio internacional","Zona onde não há fronteiras"], correta:1,
+        explicacao:"A ZEE é uma faixa marítima onde o país tem direitos exclusivos de exploração de recursos." },
+      { pergunta:"O MERCOSUL é um bloco econômico formado principalmente por quais países fundadores?",
+        alternativas:["Brasil, Argentina, Paraguai e Uruguai","Brasil, Chile, Peru e Bolívia","México, Brasil e Argentina","Estados Unidos, Canadá e México"], correta:0,
+        explicacao:"O MERCOSUL foi fundado por Brasil, Argentina, Paraguai e Uruguai em 1991." },
+      { pergunta:"O efeito estufa é intensificado principalmente pela emissão de qual gás?",
+        alternativas:["Oxigênio","Gás carbônico (CO₂)","Nitrogênio","Hélio"], correta:1,
+        explicacao:"O aumento das emissões de CO₂ é o principal fator do agravamento do efeito estufa." },
+      { pergunta:"O deslocamento de pessoas por motivos como guerras, perseguições ou desastres é chamado de:",
+        alternativas:["Migração pendular","Êxodo rural","Migração forçada","Turismo"], correta:2,
+        explicacao:"Migração forçada ocorre quando pessoas são obrigadas a deixar seus territórios por conflitos, perseguições ou desastres." },
+      { pergunta:"O processo de industrialização brasileira se intensificou principalmente a partir de qual período?",
+        alternativas:["Período colonial","Era Vargas (1930-1945)","Período imperial","Século XXI"], correta:1,
+        explicacao:"A industrialização brasileira ganhou força a partir da Era Vargas, com incentivo à indústria de base." },
+      { pergunta:"O conceito de 'geopolítica' está relacionado principalmente a:",
+        alternativas:["Estudo exclusivo do relevo","Relação entre poder político e espaço geográfico","Estudo do clima mundial","Cartografia digital"], correta:1,
+        explicacao:"Geopolítica estuda como fatores geográficos influenciam decisões e relações de poder entre Estados." }
+    ]
+  },
+  "Ciências":{
+    "Fácil":[
+      { pergunta:"Quais são os três principais estados físicos da matéria?",
+        alternativas:["Sólido, líquido e gasoso","Quente, frio e morno","Duro, mole e flexível","Ácido, básico e neutro"], correta:0,
+        explicacao:"Os estados físicos fundamentais da matéria são sólido, líquido e gasoso." },
+      { pergunta:"O processo pelo qual as plantas produzem seu próprio alimento usando luz solar é chamado de:",
+        alternativas:["Respiração","Fotossíntese","Transpiração","Digestão"], correta:1,
+        explicacao:"A fotossíntese converte luz solar, água e CO₂ em glicose e oxigênio." },
+      { pergunta:"Qual é o planeta mais próximo do Sol?",
+        alternativas:["Vênus","Terra","Mercúrio","Marte"], correta:2,
+        explicacao:"Mercúrio é o planeta mais próximo do Sol no Sistema Solar." },
+      { pergunta:"Qual órgão é responsável por bombear o sangue pelo corpo?",
+        alternativas:["Pulmão","Coração","Fígado","Rim"], correta:1,
+        explicacao:"O coração bombeia o sangue por todo o corpo através dos vasos sanguíneos." },
+      { pergunta:"Em uma cadeia alimentar, os seres que produzem seu próprio alimento são chamados de:",
+        alternativas:["Consumidores","Decompositores","Produtores","Predadores"], correta:2,
+        explicacao:"Os produtores, como as plantas, fabricam seu próprio alimento via fotossíntese." },
+      { pergunta:"Qual é a fórmula química da água?",
+        alternativas:["CO₂","H₂O","O₂","NaCl"], correta:1,
+        explicacao:"A água é formada por dois átomos de hidrogênio e um de oxigênio: H₂O." }
+    ],
+    "Médio":[
+      { pergunta:"Qual é a principal diferença entre células procariontes e eucariontes?",
+        alternativas:["Procariontes têm núcleo definido e eucariontes não","Eucariontes possuem núcleo definido, procariontes não","Não há diferença","Procariontes só existem em plantas"], correta:1,
+        explicacao:"Células eucariontes possuem núcleo delimitado por membrana; procariontes não possuem núcleo definido." },
+      { pergunta:"A Primeira Lei de Newton (Lei da Inércia) afirma que:",
+        alternativas:["Todo corpo tende a acelerar sozinho","Um corpo em repouso ou movimento uniforme tende a permanecer assim, salvo ação de força externa","Ação e reação são sempre iguais","A força é igual à massa vezes o volume"], correta:1,
+        explicacao:"A Lei da Inércia descreve a tendência dos corpos de manterem seu estado de movimento." },
+      { pergunta:"Qual é o símbolo químico do elemento Ouro?",
+        alternativas:["Ag","Au","O","Or"], correta:1,
+        explicacao:"O símbolo químico do ouro é 'Au', do latim 'aurum'." },
+      { pergunta:"Qual órgão do sistema respiratório é o principal responsável pelas trocas gasosas?",
+        alternativas:["Traqueia","Laringe","Pulmões (alvéolos)","Faringe"], correta:2,
+        explicacao:"É nos alvéolos pulmonares que ocorrem as trocas gasosas entre o ar e o sangue." },
+      { pergunta:"No ciclo da água, a transformação da água líquida em vapor é chamada de:",
+        alternativas:["Condensação","Precipitação","Evaporação","Infiltração"], correta:2,
+        explicacao:"Evaporação é a passagem da água do estado líquido para o gasoso." },
+      { pergunta:"A fórmula da energia cinética é dada por:",
+        alternativas:["Ec = m × g × h","Ec = m × v² / 2","Ec = F × d","Ec = m / v"], correta:1,
+        explicacao:"A energia cinética é calculada por Ec = (massa × velocidade²) / 2." }
+    ],
+    "Difícil":[
+      { pergunta:"Qual é a principal diferença entre mitose e meiose?",
+        alternativas:["Mitose gera 4 células haploides; meiose gera 2 diploides","Mitose gera células idênticas; meiose gera células com metade dos cromossomos","Não há diferença","Meiose só ocorre em bactérias"], correta:1,
+        explicacao:"A mitose produz células geneticamente idênticas; a meiose reduz o número de cromossomos pela metade, formando gametas." },
+      { pergunta:"Segundo a 1ª Lei de Mendel (Lei da Segregação), cada característica é determinada por:",
+        alternativas:["Um único gene sempre dominante","Um par de fatores (alelos) que se separam na formação dos gametas","Vários genes ligados ao sexo","Apenas fatores recessivos"], correta:1,
+        explicacao:"A 1ª Lei de Mendel afirma que cada característica é determinada por um par de alelos que se segregam na formação dos gametas." },
+      { pergunta:"Qual é o número atômico do elemento Carbono?",
+        alternativas:["4","6","8","12"], correta:1,
+        explicacao:"O Carbono possui número atômico 6, ou seja, 6 prótons no núcleo." },
+      { pergunta:"A Segunda Lei da Termodinâmica está relacionada principalmente com:",
+        alternativas:["Conservação de energia","Aumento da entropia em sistemas isolados","Velocidade da luz","Força gravitacional"], correta:1,
+        explicacao:"A Segunda Lei da Termodinâmica afirma que a entropia de um sistema isolado tende sempre a aumentar." },
+      { pergunta:"A estrutura do DNA é descrita como uma:",
+        alternativas:["Cadeia simples linear","Dupla hélice","Estrutura cúbica","Estrutura esférica"], correta:1,
+        explicacao:"O DNA tem estrutura de dupla hélice, descoberta por Watson e Crick." },
+      { pergunta:"Pela Segunda Lei de Newton (F = m·a), qual é a força necessária para acelerar um corpo de 10 kg a 2 m/s²?",
+        alternativas:["5 N","12 N","20 N","200 N"], correta:2,
+        explicacao:"F = m × a = 10 × 2 = 20 N." }
+    ]
+  },
+  "Inglês":{
+    "Fácil":[
+      { pergunta:"Complete: 'She ___ a teacher.'",
+        alternativas:["am","is","are","be"], correta:1,
+        explicacao:"Com a 3ª pessoa do singular (she), usa-se 'is'." },
+      { pergunta:"What color is the sky on a clear day?",
+        alternativas:["Green","Red","Blue","Yellow"], correta:2,
+        explicacao:"O céu em um dia claro é 'blue' (azul)." },
+      { pergunta:"What is the plural of 'child'?",
+        alternativas:["Childs","Children","Childes","Childrens"], correta:1,
+        explicacao:"O plural irregular de 'child' é 'children'." },
+      { pergunta:"How do you say 'Bom dia' in English?",
+        alternativas:["Good night","Good afternoon","Good morning","Goodbye"], correta:2,
+        explicacao:"'Bom dia' se traduz como 'Good morning'." },
+      { pergunta:"Which day comes after 'Monday'?",
+        alternativas:["Sunday","Tuesday","Wednesday","Friday"], correta:1,
+        explicacao:"Depois de 'Monday' (segunda-feira) vem 'Tuesday' (terça-feira)." },
+      { pergunta:"Complete with the simple past: 'Yesterday, I ___ (play) football.'",
+        alternativas:["play","plays","played","playing"], correta:2,
+        explicacao:"Verbos regulares no passado simples recebem '-ed': played." }
+    ],
+    "Médio":[
+      { pergunta:"Choose the correct sentence using Present Perfect.",
+        alternativas:["I have went to Paris.","I have gone to Paris.","I has gone to Paris.","I going to Paris."], correta:1,
+        explicacao:"O particípio de 'go' é 'gone'; a forma correta é 'I have gone to Paris.'" },
+      { pergunta:"What is the superlative form of 'good'?",
+        alternativas:["gooder","best","goodest","more good"], correta:1,
+        explicacao:"'Good' é irregular; seu superlativo é 'best'." },
+      { pergunta:"Which modal verb expresses obligation?",
+        alternativas:["Can","Might","Must","Would"], correta:2,
+        explicacao:"'Must' expressa obrigação ou necessidade." },
+      { pergunta:"Choose the correct preposition: 'The book is ___ the table.'",
+        alternativas:["in","on","at","under the under"], correta:1,
+        explicacao:"Para indicar que algo está sobre uma superfície, usa-se 'on'." },
+      { pergunta:"Which question word is used to ask about a place?",
+        alternativas:["Who","When","Where","Why"], correta:2,
+        explicacao:"'Where' é usado para perguntar sobre lugares." },
+      { pergunta:"What does the phrasal verb 'give up' mean?",
+        alternativas:["Continuar","Desistir","Comemorar","Perguntar"], correta:1,
+        explicacao:"'Give up' significa 'desistir'." }
+    ],
+    "Difícil":[
+      { pergunta:"Complete the conditional: 'If it ___ tomorrow, we will stay home.'",
+        alternativas:["rain","rains","rained","raining"], correta:1,
+        explicacao:"No 'First Conditional', a oração com 'if' usa o presente simples: 'rains'." },
+      { pergunta:"Choose the correct passive voice for: 'They built this house in 1990.'",
+        alternativas:["This house built in 1990.","This house was built in 1990.","This house is built in 1990.","This house has build in 1990."], correta:1,
+        explicacao:"Voz passiva no passado: 'was/were + particípio': 'was built'." },
+      { pergunta:"Choose the correct reported speech for: He said, 'I am tired.'",
+        alternativas:["He said he is tired.","He said he was tired.","He says he was tired.","He said I am tired."], correta:1,
+        explicacao:"No discurso indireto no passado, 'am' muda para 'was': 'He said he was tired.'" },
+      { pergunta:"Choose the sentence with a correct relative clause.",
+        alternativas:["The man which called you is here.","The man who called you is here.","The man whom called you is here.","The man whose called you is here."], correta:1,
+        explicacao:"Para pessoas, usa-se o pronome relativo 'who' como sujeito da oração." },
+      { pergunta:"Which word is a 'false cognate' in relation to the Portuguese word 'pretender'?",
+        alternativas:["Pretend (fingir)","Intend (pretender)","Predict (prever)","Present (presente)"], correta:0,
+        explicacao:"'Pretend' significa 'fingir', não 'pretender' — é um falso cognato clássico." },
+      { pergunta:"Choose the correct form: 'I enjoy ___ (read) books.'",
+        alternativas:["read","to read","reading","reads"], correta:2,
+        explicacao:"O verbo 'enjoy' é seguido de gerúndio: 'reading'." }
+    ]
+  }
+};
+
+/*====================================================
+VARIÁVEIS DO QUIZ
+====================================================*/
+let questoes=[];
+let indiceQuestao=0;
+let acertos=0;
+let vidas = 3;
+let moedasQuiz = 0;
+let xpQuizAtual = 0;
+let sequencia = 0;
+let maiorSequencia = 0;
+
+function embaralhar(lista){
+  let copia=[...lista];
+  for(let i=copia.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [copia[i],copia[j]]=[copia[j],copia[i]];
+  }
+  return copia;
+}
+
+/*====================================================
+INICIAR QUIZ (a partir dos cards de Modo)
+====================================================*/
+function iniciarQuiz(){
+  modoSelecionado = event.currentTarget.querySelector("h2").innerText;
+
+  if(!bancoQuestoes[materiaSelecionada] || !bancoQuestoes[materiaSelecionada][dificuldadeSelecionada]){
+    alert("Ainda não há questões cadastradas para essa combinação de matéria/dificuldade.");
+    return;
+  }
+
+  let lista = embaralhar(bancoQuestoes[materiaSelecionada][dificuldadeSelecionada]);
+  iniciarQuizComLista(lista, materiaSelecionada, dificuldadeSelecionada, modoSelecionado);
+}
+
+/*====================================================
+INICIAR QUIZ COM UMA LISTA DE QUESTÕES (função genérica)
+====================================================*/
+function iniciarQuizComLista(lista, materiaLabel, dificuldadeLabel, modoLabel){
+  if(!lista || lista.length===0){
+    alert("Não há questões disponíveis para iniciar esse quiz.");
+    return;
+  }
+
+  ultimoPoolQuiz = lista;
+  materiaSelecionada = materiaLabel;
+  dificuldadeSelecionada = dificuldadeLabel;
+  modoSelecionado = modoLabel;
+
+  esconderTudo();
+  document.getElementById("telaQuiz").style.display="block";
+
+  indiceQuestao=0;
+  acertos=0;
+  vidas = 3 + vidasExtras;
+  vidasExtras = 0;
+  moedasQuiz=0;
+  xpQuizAtual=0;
+  sequencia=0;
+  maiorSequencia=0;
+
+  document.getElementById("quizMateria").innerHTML="📚 "+materiaLabel;
+  document.getElementById("quizInfo").innerHTML=dificuldadeLabel+" • "+modoLabel;
+  document.getElementById("vidasQuiz").innerHTML=vidas;
+  document.getElementById("moedasQuiz").innerHTML=moedasQuiz;
+  document.getElementById("xpQuiz").innerHTML=xpQuizAtual+" XP";
+  document.getElementById("sequenciaQuiz").innerHTML=sequencia;
+
+  questoes = embaralhar(lista);
+  carregarQuestao();
+}
+
+function carregarQuestao(){
+  let q=questoes[indiceQuestao];
+
+  document.getElementById("numeroQuestao").innerHTML=indiceQuestao+1;
+  document.getElementById("perguntaQuiz").innerHTML=q.pergunta;
+  document.getElementById("progressTexto").innerHTML="Questão "+(indiceQuestao+1)+" de "+questoes.length;
+
+  let progresso=((indiceQuestao+1)/questoes.length)*100;
+  document.getElementById("quizProgress").style.width=progresso+"%";
+
+  let alternativas=embaralhar(
+    q.alternativas.map((texto,index)=>{ return { texto:texto, original:index } })
+  );
+
+  let html="";
+  alternativas.forEach((item)=>{
+    html+=`<button class="alternativa" onclick="responder(${item.original})">${item.texto}</button>`;
+  });
+  document.getElementById("alternativasQuiz").innerHTML=html;
+
+  document.getElementById("explicacaoQuiz").style.display="none";
+  document.getElementById("btnProximaQuestao").style.display="none";
+}
+
+/*====================================================
+RESPONDER QUESTÃO
+====================================================*/
+function responder(indiceSelecionado){
+  let questao = questoes[indiceQuestao];
+  const botoes = document.querySelectorAll(".alternativa");
+
+  questoesRespondidasHoje++;
+
+  botoes.forEach(botao=>{ botao.disabled = true; });
+
+  botoes.forEach((botao)=>{
+    if(botao.innerText === questao.alternativas[questao.correta]){
+      botao.style.background="#22c55e";
+    }
+  });
+
+  if(indiceSelecionado == questao.correta){
+    acertos++;
+    sequencia++;
+    if(sequencia>maiorSequencia){ maiorSequencia=sequencia; }
+    xpQuizAtual += 10;
+    moedasQuiz += 5;
+  }else{
+    sequencia = 0;
+    vidas--;
+    errosAcumulados.push({
+      materia: materiaSelecionada,
+      dificuldade: dificuldadeSelecionada,
+      pergunta: questao.pergunta,
+      alternativas: questao.alternativas,
+      correta: questao.correta,
+      explicacao: questao.explicacao
+    });
+    botoes.forEach((botao)=>{
+      if(botao.innerText == questao.alternativas[indiceSelecionado]){
+        botao.style.background="#ef4444";
+      }
+    });
+  }
+
+  document.getElementById("vidasQuiz").innerHTML = vidas;
+  document.getElementById("xpQuiz").innerHTML = xpQuizAtual+" XP";
+  document.getElementById("moedasQuiz").innerHTML = moedasQuiz;
+  document.getElementById("sequenciaQuiz").innerHTML = sequencia;
+
+  document.getElementById("textoExplicacao").innerHTML = questao.explicacao;
+  document.getElementById("explicacaoQuiz").style.display="block";
+  document.getElementById("btnProximaQuestao").style.display="inline-block";
+
+  if(vidas<=0){
+    document.getElementById("btnProximaQuestao").innerHTML="Ver Resultado";
+  }
+}
+
+/*====================================================
+PRÓXIMA QUESTÃO
+====================================================*/
+document.getElementById("btnProximaQuestao").onclick=function(){
+  if(vidas<=0){
+    mostrarResultado();
+    return;
+  }
+
+  indiceQuestao++;
+
+  if(indiceQuestao>=questoes.length){
+    mostrarResultado();
+    return;
+  }
+
+  document.getElementById("btnProximaQuestao").innerHTML="Próxima Questão →";
+  carregarQuestao();
+}
+
+/*====================================================
+RESULTADO
+====================================================*/
+function mostrarResultado(){
+  document.getElementById("telaQuiz").style.display="none";
+
+  let porcentagem = Math.round((acertos/questoes.length)*100);
+  let mensagem="";
+
+  if(porcentagem>=90){
+    mensagem="🏆 Excelente desempenho!";
+  }else if(porcentagem>=70){
+    mensagem="🎉 Muito bom!";
+  }else if(porcentagem>=50){
+    mensagem="👍 Continue praticando!";
+  }else{
+    mensagem="📚 Revise o conteúdo e tente novamente.";
+  }
+
+  let xpGanho = xpQuizAtual;
+  if(multiplicadorXP){
+    xpGanho = xpGanho*2;
+    multiplicadorXP = false;
+  }
+
+  xpAtual += xpGanho;
+  while(xpAtual>=100){
+    xpAtual-=100;
+    nivel++;
+  }
+  moedas += moedasQuiz;
+  quizzesCompletos++;
+  diasSequencia++;
+  if(porcentagem>melhorAproveitamento){ melhorAproveitamento=porcentagem; }
+  if(maiorSequencia>maiorSequenciaGeral){ maiorSequenciaGeral=maiorSequencia; }
+  if(porcentagem===100){ medalhas++; }
+
+  atualizarPatente();
+  animarXP();
+  atualizarRecursos();
+  document.getElementById("streakDias").innerHTML = diasSequencia+" dias";
+
+  let resultadoExistente = document.getElementById("resultadoFinal");
+  if(resultadoExistente){ resultadoExistente.remove(); }
+
+  document.body.insertAdjacentHTML("beforeend", `
+    <section id="resultadoFinal" class="pagina" style="max-width:480px;margin:30px auto;padding:0 30px;">
+      <div class="quizContainer">
+        <h1>🏁 Resultado Final</h1>
+        <br>
+        <h2>${mensagem}</h2>
+        <br>
+        <h3>Acertos: ${acertos} de ${questoes.length}</h3>
+        <br>
+        <h3>Aproveitamento: ${porcentagem}%</h3>
+        <br>
+        <h3>⭐ XP Ganho: ${xpGanho}</h3>
+        <br>
+        <h3>🪙 Moedas Ganhas: ${moedasQuiz}</h3>
+        <br>
+        <h3>🔥 Maior Sequência: ${maiorSequencia}</h3>
+        <br><br>
+        <button class="btnPrincipal" onclick="jogarNovamente()">Jogar Novamente</button>
+        <button class="botaoVoltar" onclick="voltarDashboard()">Voltar ao Início</button>
+      </div>
+    </section>
+  `);
+}
+
+function jogarNovamente(){
+  let resultado = document.getElementById("resultadoFinal");
+  if(resultado){ resultado.remove(); }
+  iniciarQuizComLista(ultimoPoolQuiz, materiaSelecionada, dificuldadeSelecionada, modoSelecionado);
+}
+
+function voltarDashboard(){
+  let resultado = document.getElementById("resultadoFinal");
+  if(resultado){ resultado.remove(); }
+  voltarHome();
+}
+
+/*====================================================
+REVISAR ERROS (a partir do modo card, filtrado por matéria/dificuldade)
+====================================================*/
+function iniciarRevisaoErros(){
+  let filtrados = errosAcumulados.filter(e => e.materia===materiaSelecionada && e.dificuldade===dificuldadeSelecionada);
+  if(filtrados.length===0){
+    alert("Você ainda não errou nenhuma questão nessa matéria/dificuldade! 🎉");
+    return;
+  }
+  iniciarQuizComLista(embaralhar(filtrados), materiaSelecionada, dificuldadeSelecionada, "Revisão de Erros");
+}
+
+/*====================================================
+SIMULADO GERAL (sidebar) - mistura todas as matérias/dificuldades
+====================================================*/
+function abrirSimuladoGeral(){
+  let pool=[];
+  for(let materia in bancoQuestoes){
+    for(let dif in bancoQuestoes[materia]){
+      bancoQuestoes[materia][dif].forEach(q=>{
+        pool.push({...q, materiaOrigem:materia, dificuldadeOrigem:dif});
+      });
+    }
+  }
+  pool = embaralhar(pool).slice(0,10);
+  iniciarQuizComLista(pool, "Simulado Geral", "Misto", "Simulado");
+}
+
+/*====================================================
+PERFIL
+====================================================*/
+function renderizarPerfil(){
+  document.getElementById("perfilNome").innerHTML = nomeUsuario;
+  document.getElementById("perfilPatente").innerHTML = obterPatente();
+  document.getElementById("perfilNivel").innerHTML = nivel;
+  document.getElementById("perfilXP").innerHTML = xpAtual+" / 100";
+  document.getElementById("perfilMoedas").innerHTML = moedas;
+  document.getElementById("perfilGemas").innerHTML = gemas;
+  document.getElementById("perfilMedalhas").innerHTML = medalhas;
+  document.getElementById("perfilQuizzes").innerHTML = quizzesCompletos;
+  document.getElementById("perfilMelhor").innerHTML = melhorAproveitamento+"%";
+  document.getElementById("perfilSequencia").innerHTML = maiorSequenciaGeral;
+}
+
+function abrirPerfil(){
+  esconderTudo();
+  renderizarPerfil();
+  document.getElementById("telaPerfil").style.display="flex";
+}
+
+/*====================================================
+MISSÕES
+====================================================*/
+let missoesLista = [
+  { id:"m1", nome:"Maratona de Questões", desc:"Responda 10 questões hoje", meta:10, atual:()=>questoesRespondidasHoje, recompensaMoedas:20, recompensaGemas:0 },
+  { id:"m2", nome:"Sequência Dourada", desc:"Acerte 5 questões seguidas", meta:5, atual:()=>maiorSequenciaGeral, recompensaMoedas:15, recompensaGemas:5 },
+  { id:"m3", nome:"Compromisso Diário", desc:"Complete 1 quiz", meta:1, atual:()=>quizzesCompletos, recompensaMoedas:30, recompensaGemas:0 }
+];
+
+function renderizarMissoes(){
+  let html = missoesLista.map(m=>{
+    let atual = Math.min(m.atual(), m.meta);
+    let progresso = Math.round((atual/m.meta)*100);
+    let concluida = atual>=m.meta;
+    let resgatada = missoesResgatadas[m.id];
+    let botao = resgatada
+      ? `<button class="btnPrincipal" disabled style="opacity:.5;cursor:not-allowed;">Resgatada ✅</button>`
+      : concluida
+        ? `<button class="btnPrincipal" onclick="resgatarMissao('${m.id}')">Resgatar Recompensa</button>`
+        : `<button class="btnPrincipal" disabled style="opacity:.5;cursor:not-allowed;">Em progresso...</button>`;
+    return `
+      <div class="questionCard">
+        <h2>${m.nome}</h2>
+        <p style="color:#9ca3af;margin:10px 0;">${m.desc}</p>
+        <div class="progressBar"><div class="progressFill" style="width:${progresso}%;"></div></div>
+        <p style="margin:10px 0;">${atual} / ${m.meta}</p>
+        <p style="margin-bottom:15px;">Recompensa: 🪙 ${m.recompensaMoedas}${m.recompensaGemas>0?' 💎 '+m.recompensaGemas:''}</p>
+        ${botao}
+      </div>`;
+  }).join("");
+  document.getElementById("listaMissoes").innerHTML = html;
+}
+
+function resgatarMissao(id){
+  let m = missoesLista.find(x=>x.id===id);
+  moedas += m.recompensaMoedas;
+  gemas += m.recompensaGemas;
+  missoesResgatadas[id]=true;
+  atualizarRecursos();
+  renderizarMissoes();
+  alert("Recompensa resgatada! 🎉");
+}
+
+function abrirMissoes(){
+  esconderTudo();
+  renderizarMissoes();
+  document.getElementById("telaMissoes").style.display="flex";
+}
+
+/*====================================================
+RANKING
+====================================================*/
+let rankingFicticio = [
+  {nome:"Ana Souza", pontos:920},
+  {nome:"Carlos Lima", pontos:875},
+  {nome:"Beatriz Alves", pontos:790},
+  {nome:"João Pedro", pontos:640},
+  {nome:"Fernanda Dias", pontos:510}
+];
+
+function abrirRanking(){
+  esconderTudo();
+  let pontosUsuario = nivel*100+xpAtual;
+  let lista = [...rankingFicticio, {nome: nomeUsuario+" (Você)", pontos: pontosUsuario}];
+  lista.sort((a,b)=>b.pontos-a.pontos);
+  let html = lista.map((j,i)=>{
+    let voce = j.nome.includes("(Você)");
+    return `<div class="rankItem ${voce?'rankVoce':''}"><span>${i+1}º</span><span>${j.nome}</span><span>${j.pontos} pts</span></div>`;
+  }).join("");
+  document.getElementById("listaRanking").innerHTML = html;
+  document.getElementById("telaRanking").style.display="flex";
+}
+
+/*====================================================
+REVISAR ERROS (GERAL - sidebar)
+====================================================*/
+function renderizarErrosGeral(){
+  let container = document.getElementById("listaErrosGeral");
+  if(errosAcumulados.length===0){
+    container.innerHTML = `<div class="questionCard"><h2>🎉 Nenhum erro para revisar!</h2><p style="color:#9ca3af;margin-top:10px;">Continue estudando para manter essa lista vazia.</p></div>`;
+    return;
+  }
+  let html = errosAcumulados.map((erro, idx)=>{
+    let altsHtml = erro.alternativas.map((alt,i)=>`<button class="alternativa" onclick="responderErroGeral(${idx},${i})">${alt}</button>`).join("");
+    return `
+      <div class="questionCard">
+        <div class="questionNumber">${erro.materia} • ${erro.dificuldade}</div>
+        <h2>${erro.pergunta}</h2>
+        <div class="alternativas" style="margin-top:20px;">${altsHtml}</div>
+      </div>`;
+  }).join("");
+  container.innerHTML = html;
+}
+
+function responderErroGeral(idx, altIndex){
+  let erro = errosAcumulados[idx];
+  if(altIndex===erro.correta){
+    alert("Certinho! 🎉 Removido da lista de revisão.\n\n💡 "+erro.explicacao);
+    errosAcumulados.splice(idx,1);
+  }else{
+    alert("Ainda não foi dessa vez. 💡 "+erro.explicacao);
+  }
+  renderizarErrosGeral();
+}
+
+function abrirRevisarErrosGeral(){
+  esconderTudo();
+  renderizarErrosGeral();
+  document.getElementById("telaRevisarErros").style.display="flex";
+}
+
+/*====================================================
+LOJA
+====================================================*/
+function comprarItem(tipo, custo, tipoMoeda){
+  if(tipoMoeda==="moedas"){
+    if(moedas<custo){ alert("Moedas insuficientes!"); return; }
+    moedas-=custo;
+  }else{
+    if(gemas<custo){ alert("Gemas insuficientes!"); return; }
+    gemas-=custo;
+  }
+
+  if(tipo==="vida"){
+    vidasExtras++;
+    alert("❤️ Vida extra comprada! Será usada no próximo quiz.");
+  }else if(tipo==="xp2x"){
+    multiplicadorXP=true;
+    alert("⭐ Multiplicador de XP ativado para o próximo quiz!");
+  }else if(tipo==="temaRoxo"){
+    document.documentElement.style.setProperty('--azul','#8b5cf6');
+    alert("🟣 Tema roxo aplicado!");
+  }else if(tipo==="temaRosa"){
+    document.documentElement.style.setProperty('--azul','#ec4899');
+    alert("🩷 Tema rosa aplicado!");
+  }
+
+  atualizarRecursos();
+}
+
+function abrirLoja(){
+  esconderTudo();
+  atualizarRecursos();
+  document.getElementById("telaLoja").style.display="flex";
+}
+
+/*====================================================
+CONQUISTAS
+====================================================*/
+let conquistasLista = [
+  {nome:"Primeira Vitória", desc:"Complete seu primeiro quiz", cond:()=>quizzesCompletos>=1, emoji:"🥇"},
+  {nome:"Sequência de Ouro", desc:"Acerte 5 questões seguidas", cond:()=>maiorSequenciaGeral>=5, emoji:"🔥"},
+  {nome:"Perfeccionista", desc:"Tire 100% em um quiz", cond:()=>melhorAproveitamento>=100, emoji:"💯"},
+  {nome:"Rico", desc:"Acumule 500 moedas", cond:()=>moedas>=500, emoji:"🪙"},
+  {nome:"Estudioso", desc:"Complete 5 quizzes", cond:()=>quizzesCompletos>=5, emoji:"📚"},
+  {nome:"Colecionador", desc:"Tenha 10 gemas", cond:()=>gemas>=10, emoji:"💎"}
+];
+
+function abrirConquistas(){
+  esconderTudo();
+  let html = conquistasLista.map(c=>{
+    let desbloqueada = c.cond();
+    return `<div class="card ${desbloqueada?'':'badgeLocked'}"><div class="emoji">${desbloqueada?c.emoji:'🔒'}</div><h3>${c.nome}</h3><p style="color:#9ca3af;margin-top:8px;">${c.desc}</p></div>`;
+  }).join("");
+  document.getElementById("gridConquistas").innerHTML = html;
+  document.getElementById("telaConquistas").style.display="flex";
+}
+
+/*====================================================
+CONFIGURAÇÕES
+====================================================*/
+function abrirConfiguracoes(){
+  esconderTudo();
+  document.getElementById("inputNome").value = nomeUsuario;
+  document.getElementById("somStatus").innerText = somAtivado ? "Ativado 🔊" : "Desativado 🔇";
+  document.getElementById("telaConfiguracoes").style.display="flex";
+}
+
+function salvarNome(){
+  let novo = document.getElementById("inputNome").value.trim();
+  if(novo===""){
+    alert("Digite um nome válido.");
+    return;
+  }
+  nomeUsuario = novo;
+  document.getElementById("nomeHeader").innerHTML = novo.split(" ")[0];
+  document.getElementById("nomeProfile").innerHTML = novo;
+  alert("Nome atualizado!");
+}
+
+function alternarTema(){
+  temaEscuro = !temaEscuro;
+  document.body.classList.toggle("temaClaro", !temaEscuro);
+}
+
+function alternarSom(){
+  somAtivado = !somAtivado;
+  document.getElementById("somStatus").innerText = somAtivado ? "Ativado 🔊" : "Desativado 🔇";
+}
+
+function sair(){
+  if(confirm("Deseja realmente sair?")){
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>
